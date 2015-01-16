@@ -2,14 +2,14 @@
 
 from setuptools import setup
 
-setup(name='cabot-alert-hipchat',
+setup(name='cabot-alert-twilio',
       version='1.0',
-      description='A hipchat alert plugin for Cabot by Arachnys',
+      description='A twilio alert plugin for Cabot by Arachnys',
       author='Arachnys',
       author_email='info@arachnys.org',
       url='http://cabotapp.com',
       packages=[
-      	'cabot_alert_hipchat'
+      	'cabot_alert_twilio'
       	],
-      download_url= 'https://github.com/bonniejools/cabot-alert-hipchat/tarball/0.1'
+      download_url= 'https://github.com/bonniejools/cabot-alert-twilio/tarball/0.1'
      )

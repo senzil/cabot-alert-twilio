@@ -72,3 +72,8 @@ class TwilioSMS(AlertPlugin):
 class TwilioUserData(AlertPluginUserData):
     name = "Twilio Plugin"
     phone_number = models.CharField(max_length=30, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if self.phone_number.startswith('+'):
+            self.phone_number = self.phone_number[1:]
+        return super(UserProfile, self).save(*args, **kwargs)

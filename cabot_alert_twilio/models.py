@@ -20,11 +20,16 @@ class TwilioPhoneCall(AlertPlugin):
     name = "Twilio Phone Call"
     author = "Jonathan Balls"
     def send_alert(service, users, duty_officers):
+
+        account_sid = env.get('TWILIO_ACCOUNT_SID')
+        auth_token  = env.get('TWILIO_AUTH_TOKEN')
+        outgoing_number = env.get('TWILIO_OUTGOING_NUMBER')
+
         # No need to call to say things are resolved
         if service.overall_status != service.CRITICAL_STATUS:
             return
         client = TwilioRestClient(
-            settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+            account_sid, auth_token)
         mobiles = [u.profile.prefixed_mobile_number for u in duty_officers if hasattr(
             u, 'profile') and u.profile.mobile_number]
         url = 'http://%s%s' % (settings.WWW_HTTP_HOST,
@@ -33,7 +38,7 @@ class TwilioPhoneCall(AlertPlugin):
             try:
                 client.calls.create(
                     to=mobile,
-                    from_=settings.TWILIO_OUTGOING_NUMBER,
+                    from_=outgoing_number,
                     url=url,
                     method='GET',
                 )
@@ -45,8 +50,13 @@ class TwilioSMS(AlertPlugin):
     author = "Jonathan Balls"
 
     def send_alert(service, users, duty_officers):
+
+        account_sid = env.get('TWILIO_ACCOUNT_SID')
+        auth_token  = env.get('TWILIO_AUTH_TOKEN')
+        outgoing_number = env.get('TWILIO_OUTGOING_NUMBER')
+
         client = TwilioRestClient(
-            settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+            account_sid, auth_token)
         mobiles = [u.profile.prefixed_mobile_number for u in users if hasattr(
             u, 'profile') and u.profile.mobile_number]
         if service.is_critical:
@@ -63,7 +73,7 @@ class TwilioSMS(AlertPlugin):
             try:
                 client.sms.messages.create(
                     to=mobile,
-                    from_=settings.TWILIO_OUTGOING_NUMBER,
+                    from_=outgoing_number,
                     body=message,
                 )
             except Exception, e:

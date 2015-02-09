@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='cabot-alert-twilio',
       version='1.1',
@@ -8,8 +8,6 @@ setup(name='cabot-alert-twilio',
       author='Arachnys',
       author_email='info@arachnys.org',
       url='http://cabotapp.com',
-      packages=[
-      	'cabot_alert_twilio'
-      	],
+      packages=find_packages(),
       download_url= 'https://github.com/bonniejools/cabot-alert-twilio/tarball/0.11'
      )

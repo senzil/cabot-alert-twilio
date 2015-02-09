@@ -12,14 +12,17 @@ import requests
 import logging
 
 from cabot.cabotapp.alert import AlertPlugin, AlertPluginUserData
+from cabot.cabotapp.models import UserProfile
 
 telephone_template = "This is an urgent message from Arachnys monitoring. Service \"{{ service.name }}\" is erroring. Please check Cabot urgently."
 sms_template = "Service {{ service.name }} {% if service.overall_status == service.PASSING_STATUS %}is back to normal{% else %}reporting {{ service.overall_status }} status{% endif %}: {{ scheme }}://{{ host }}{% url 'service' pk=service.id %}"
 
+logger = logging.getLogger(__name__)
+
 class TwilioPhoneCall(AlertPlugin):
     name = "Twilio Phone Call"
     author = "Jonathan Balls"
-    def send_alert(service, users, duty_officers):
+    def send_alert(self, service, users, duty_officers):
 
         account_sid = env.get('TWILIO_ACCOUNT_SID')
         auth_token  = env.get('TWILIO_AUTH_TOKEN')
@@ -49,19 +52,17 @@ class TwilioSMS(AlertPlugin):
     name = "Twilio SMS"
     author = "Jonathan Balls"
 
-    def send_alert(service, users, duty_officers):
+    def send_alert(self, service, users, duty_officers):
 
         account_sid = env.get('TWILIO_ACCOUNT_SID')
         auth_token  = env.get('TWILIO_AUTH_TOKEN')
         outgoing_number = env.get('TWILIO_OUTGOING_NUMBER')
 
+        all_users = list(users) + list(duty_officers)
+
         client = TwilioRestClient(
             account_sid, auth_token)
-        mobiles = [u.profile.prefixed_mobile_number for u in users if hasattr(
-            u, 'profile') and u.profile.mobile_number]
-        if service.is_critical:
-            mobiles += [u.profile.prefixed_mobile_number for u in duty_officers if hasattr(
-                u, 'profile') and u.profile.mobile_number]
+        mobiles = [u.phone_number for u in TwilioUserData.objects.filter(user__in=all_users)]
         c = Context({
             'service': service,
             'host': settings.WWW_HTTP_HOST,
@@ -84,6 +85,6 @@ class TwilioUserData(AlertPluginUserData):
     phone_number = models.CharField(max_length=30, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        if self.phone_number.startswith('+'):
+        if str(self.phone_number).startswith('+'):
             self.phone_number = self.phone_number[1:]
-        return super(UserProfile, self).save(*args, **kwargs)
+        return super(TwilioUserData, self).save(*args, **kwargs)

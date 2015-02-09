@@ -35,7 +35,8 @@ class TwilioPhoneCall(AlertPlugin):
             return
         client = TwilioRestClient(
             account_sid, auth_token)
-        mobiles = TwilioUserData.objects.filter(user__in=duty_officers)
+        #FIXME: `user` is in fact a `profile`
+        mobiles = TwilioUserData.objects.filter(user__user__in=duty_officers)
         mobiles = [m.prefixed_phone_number for m in mobiles if m.phone_number]
         for mobile in mobiles:
             try:
@@ -62,7 +63,7 @@ class TwilioSMS(AlertPlugin):
 
         client = TwilioRestClient(
             account_sid, auth_token)
-        mobiles = TwilioUserData.objects.filter(user__in=all_users)
+        mobiles = TwilioUserData.objects.filter(user__user__in=all_users)
         mobiles = [m.prefixed_phone_number for m in mobiles if m.phone_number]
         c = Context({
             'service': service,

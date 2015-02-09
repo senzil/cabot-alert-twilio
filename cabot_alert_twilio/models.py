@@ -27,16 +27,16 @@ class TwilioPhoneCall(AlertPlugin):
         account_sid = env.get('TWILIO_ACCOUNT_SID')
         auth_token  = env.get('TWILIO_AUTH_TOKEN')
         outgoing_number = env.get('TWILIO_OUTGOING_NUMBER')
+        url = 'http://%s%s' % (settings.WWW_HTTP_HOST,
+                               reverse('twiml-callback', kwargs={'service_id': service.id}))
 
         # No need to call to say things are resolved
         if service.overall_status != service.CRITICAL_STATUS:
             return
         client = TwilioRestClient(
             account_sid, auth_token)
-        mobiles = [u.profile.prefixed_mobile_number for u in duty_officers if hasattr(
-            u, 'profile') and u.profile.mobile_number]
-        url = 'http://%s%s' % (settings.WWW_HTTP_HOST,
-                               reverse('twiml-callback', kwargs={'service_id': service.id}))
+        mobiles = TwilioUserData.objects.filter(user__in=duty_officers)
+        mobiles = [m.prefixed_phone_number for m in mobiles if m.phone_number]
         for mobile in mobiles:
             try:
                 client.calls.create(
@@ -62,14 +62,14 @@ class TwilioSMS(AlertPlugin):
 
         client = TwilioRestClient(
             account_sid, auth_token)
-        mobiles = [u.phone_number for u in TwilioUserData.objects.filter(user__in=all_users)]
+        mobiles = TwilioUserData.objects.filter(user__in=all_users)
+        mobiles = [m.prefixed_phone_number for m in mobiles if m.phone_number]
         c = Context({
             'service': service,
             'host': settings.WWW_HTTP_HOST,
             'scheme': settings.WWW_SCHEME,
         })
         message = Template(sms_template).render(c)
-        mobiles = list(set(mobiles))
         for mobile in mobiles:
             try:
                 client.sms.messages.create(
@@ -88,3 +88,7 @@ class TwilioUserData(AlertPluginUserData):
         if str(self.phone_number).startswith('+'):
             self.phone_number = self.phone_number[1:]
         return super(TwilioUserData, self).save(*args, **kwargs)
+
+    @property
+    def prefixed_phone_number(self):
+        return '+%s' % self.phone_number

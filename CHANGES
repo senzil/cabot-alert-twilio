@@ -1,0 +1,9 @@
+master
+------
+
+* Fix plugin on Django 1.10
+
+Version 1.2.0
+-------------
+
+* Versioning Introduced

@@ -93,3 +93,8 @@ class TwilioUserData(AlertPluginUserData):
     @property
     def prefixed_phone_number(self):
         return '+%s' % self.phone_number
+
+    def serialize(self):
+        return {
+            "phone_number": self.prefixed_phone_number
+        }

@@ -96,5 +96,5 @@ class TwilioUserData(AlertPluginUserData):
 
     def serialize(self):
         return {
-            "phone_number": self.prefixed_phone_number
+            "phone_number": self.phone_number
         }

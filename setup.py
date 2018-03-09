@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 setup(name='cabot-alert-twilio',
-      version='1.3.2',
+      version='1.3.3',
       description='A twilio alert plugin for Cabot by Arachnys',
       author='Arachnys',
       author_email='info@arachnys.org',

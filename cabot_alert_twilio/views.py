@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from cabot.cabotapp.models import Service
+from cabot3.cabotapp.models import Service
 from django.template import Context, Template
 from twilio.rest import TwilioRestClient
 from twilio import twiml

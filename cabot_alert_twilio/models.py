@@ -11,8 +11,8 @@ from twilio import twiml
 import requests
 import logging
 
-from cabot.cabotapp.alert import AlertPlugin, AlertPluginUserData
-from cabot.cabotapp.models import UserProfile
+from cabot3.cabotapp.alert import AlertPlugin, AlertPluginUserData
+from cabot3.cabotapp.models import UserProfile
 
 telephone_template = "This is an urgent message from Arachnys monitoring. Service \"{{ service.name }}\" is erroring. Please check Cabot urgently."
 sms_template = "Service {{ service.name }} {% if service.overall_status == service.PASSING_STATUS %}is back to normal{% else %}reporting {{ service.overall_status }} status{% endif %}: {{ scheme }}://{{ host }}{% url 'service' pk=service.id %}"
